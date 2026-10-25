@@ -38,37 +38,26 @@ endpoints were not found; activity training load is a different reported metric.
 
 ## Quick start with uvx
 
-Clone or download this repository, then open a terminal in its root directory.
-Check that the local package launches:
+The published package is available on [PyPI](https://pypi.org/project/garmin-training-mcp/).
+No repository checkout or cloud hosting is required. Check that it launches:
 
 ```sh
-uvx --python 3.13 --from . garmin-mcp --help
+uvx --python 3.13 --from garmin-training-mcp==0.1.0 garmin-mcp --help
 ```
 
-`--from .` uses the current checkout as the package source. No PyPI publication,
-HTTP server or cloud hosting is required. See [uv's tools guide](https://docs.astral.sh/uv/guides/tools/).
+`garmin-training-mcp` is the package name; `garmin-mcp` is its executable.
+`uvx` downloads the package and dependencies on first launch and uses its cache
+for later launches. The version pin keeps the server on the release you selected.
+See [uv's tools guide](https://docs.astral.sh/uv/guides/tools/).
 
-Find the absolute paths needed by your MCP client:
+The client examples below use `uvx` on your PATH. If your desktop client cannot
+find it, run `command -v uvx` in a terminal and use that executable's full path as
+`command`. Replace `YOUR_GARMIN_PERSONAL_API_KEY` only in your local client
+configuration with your own key.
 
-```sh
-pwd -P
-command -v uvx
-```
-
-In the configurations below, replace:
-
-- `/absolute/path/to/garmin-connect-mcp` with the repository directory printed by `pwd -P`.
-- `/absolute/path/to/uvx` with the executable printed by `command -v uvx`.
-- `YOUR_GARMIN_PERSONAL_API_KEY` with your own key, only in your local client configuration.
-
-These are placeholders, not paths to copy unchanged. MCP clients do not necessarily
-expand `~` or shell variables in commands/arguments, so use actual absolute paths.
-Keep the checkout in place; the client must be able to load it when starting the server.
-
-The first `uvx` launch may build the package and download dependencies; later
-launches use uv's cached tool environment. `uvx` resolves dependencies independently
-of this project's `uv.lock`. For exact locked dependencies, use the
-[project installation](#install-with-the-project-lockfile) instead.
+`uvx` resolves dependencies independently of this project's `uv.lock`. For local
+source changes or exact locked dependencies, use the
+[development installation](#install-with-the-project-lockfile) instead.
 
 ## Configure credentials and connect your client
 
@@ -92,8 +81,8 @@ Merge the following server entry into your user configuration at `~/.codex/confi
 
 ```toml
 [mcp_servers.garmin-training]
-command = "/absolute/path/to/uvx"
-args = ["--python", "3.13", "--from", "/absolute/path/to/garmin-connect-mcp", "garmin-mcp"]
+command = "uvx"
+args = ["--python", "3.13", "--from", "garmin-training-mcp==0.1.0", "garmin-mcp"]
 tool_timeout_sec = 180
 
 [mcp_servers.garmin-training.env]
@@ -127,10 +116,10 @@ Merge this entry into the client's local MCP configuration:
   "mcpServers": {
     "garmin-training": {
       "type": "stdio",
-      "command": "/absolute/path/to/uvx",
+      "command": "uvx",
       "args": [
         "--python", "3.13",
-        "--from", "/absolute/path/to/garmin-connect-mcp",
+        "--from", "garmin-training-mcp==0.1.0",
         "garmin-mcp"
       ],
       "env": {
@@ -165,10 +154,10 @@ client's `env` block is not automatically available to a separate terminal comma
 
 ### Option 2: hidden-prompt key file
 
-From the repository root, run:
+Run in an interactive terminal:
 
 ```sh
-uvx --python 3.13 --from . garmin-mcp setup
+uvx --python 3.13 --from garmin-training-mcp==0.1.0 garmin-mcp setup
 ```
 
 The prompt hides your input and refuses noninteractive input or an echoing fallback.
@@ -182,14 +171,13 @@ Use the same client configurations above, omitting the `env` block or `.env` tab
 if you want the saved key file to be used. An empty `GARMIN_PERSONAL_API_KEY` is an
 error, not a fallback to the key file.
 
-Alternatively, register clients from the repository root using these shell commands,
-which resolve the launch paths before saving the registration:
+Alternatively, after saving the key with `setup`, register clients using these
+shell commands, which resolve the executable path before saving the registration:
 
 ```sh
-GARMIN_MCP_DIR="$(pwd -P)"
 GARMIN_UVX_BIN="$(command -v uvx)"
-claude mcp add --transport stdio --scope user garmin-training -- "$GARMIN_UVX_BIN" --python 3.13 --from "$GARMIN_MCP_DIR" garmin-mcp
-codex mcp add garmin-training -- "$GARMIN_UVX_BIN" --python 3.13 --from "$GARMIN_MCP_DIR" garmin-mcp
+claude mcp add --transport stdio --scope user garmin-training -- "$GARMIN_UVX_BIN" --python 3.13 --from garmin-training-mcp==0.1.0 garmin-mcp
+codex mcp add garmin-training -- "$GARMIN_UVX_BIN" --python 3.13 --from garmin-training-mcp==0.1.0 garmin-mcp
 ```
 
 Register only the clients you use. If an entry already exists, update its configuration
@@ -222,7 +210,14 @@ Changing the key prevents reuse of a token cached for a different key.
 
 ## Install with the project lockfile
 
-For development or exact locked dependencies, run from the repository root:
+For development or exact locked dependencies, clone the repository and enter it:
+
+```sh
+git clone https://github.com/Morozov90/garmin-connect-mcp.git
+cd garmin-connect-mcp
+```
+
+Then install and verify the locked environment:
 
 ```sh
 uv sync --locked
@@ -233,6 +228,8 @@ This creates `.venv` and the `garmin-mcp` executable. For a client to launch thi
 installation directly, use `/absolute/path/to/garmin-connect-mcp/.venv/bin/garmin-mcp`
 as its command and `[]` as its arguments. Keep the same credential configuration.
 The direct launcher does not install or resolve dependencies during client startup.
+For local `uvx` development instead, use `--from .` in the repository root; client
+configurations need the full checkout path in place of `garmin-training-mcp==0.1.0`.
 
 ## Dates, units and output semantics
 
@@ -308,7 +305,7 @@ or the client terminates it. Blocking in-flight requests finish or time out befo
 thread cleanup. There is no long-lived HTTP session, background scheduler, database,
 or wellness cache. Data is fetched fresh each call; only bearer tokens are cached.
 
-Source, configuration and credentials stay on your Mac. Internet is required for
+The server runs on your Mac and stores credentials locally. Internet is required for
 Garmin API requests, and package downloads are required during installation/update.
 **Retrieved data can be sent to the AI provider by Claude Code or Codex.** Running the
 server locally does not make the model's analysis offline or keep retrieved health
@@ -327,6 +324,26 @@ untrusted user content, not instructions.
 
 ## Verify and test
 
+### Published package and client connection
+
+Check that the release launches without a checkout:
+
+```sh
+uvx --python 3.13 --from garmin-training-mcp==0.1.0 garmin-mcp --help
+```
+
+After configuring credentials, fully quit and reopen your client, then ask:
+
+> Use Garmin to compare my last two runs. What was my average pace?
+
+> Use Garmin to summarize my sleep from the last seven days.
+
+Confirm that the client calls Garmin tools and compare the results with Garmin
+Connect. A successful `--help` check verifies installation, not authentication.
+The server returns speed in meters/second; the AI client can calculate pace.
+
+### Development checks
+
 From the repository root, run the offline checks below. Tests use clearly synthetic
 fixtures and injected HTTP transport; no test requires your key or contacts Garmin:
 
@@ -342,16 +359,19 @@ through the official SDK, check errors, and close the transport. They also start
 the production entry point without credentials to verify discovery and an actionable
 error. Fixture injection exists only in test files, not as a production mode.
 
-**Separate live verification, after you configure credentials locally:** choose a
-date with synced activity, sleep and wellness data. From the repository root, replace
-`YYYY-MM-DD` with that date:
+### Live Garmin check
+
+After configuring credentials locally, choose a date with synced activity, sleep
+and wellness data. Replace `YYYY-MM-DD` with that date:
 
 ```sh
-uvx --python 3.13 --from . garmin-mcp check --date YYYY-MM-DD
+uvx --python 3.13 --from garmin-training-mcp==0.1.0 garmin-mcp check --date YYYY-MM-DD
 ```
 
 This command makes real Garmin calls and prints only availability counts/statuses,
 not raw health records or keys. It checks activity detail if search finds an activity.
+A key set only in the client's `env` configuration is not inherited by Terminal;
+use a saved key file or a securely configured terminal environment for this check.
 A missing date is a successful empty result, not proof of device support. Then:
 
 1. Make an actual tool invocation in each registered client; compare the returned
@@ -375,7 +395,7 @@ verification for the deployment you use.
 
 | Symptom / error code | Action |
 | --- | --- |
-| No tools/failed startup | Run the absolute executable with `--help`; run locked sync; restart the client; check stderr. Running `serve` manually waits for MCP messages. |
+| No tools/failed startup | Run the published launcher with `--help`; check the `uvx` executable path; restart the client; check stderr. For local development, run locked sync. Running `serve` manually waits for MCP messages. |
 | `missing_credentials` | Check `GARMIN_PERSONAL_API_KEY` in the client's `env` block, or run setup if using a key file. An empty environment override is an error. For key files, check mode/ownership and use `chmod 600` on files you intentionally trust. |
 | `authentication` | Key may be expired/deleted/revoked. Create a new Personal API key, update the client's environment setting and restart the server, or run setup if using a key file. No interactive sign-in occurs during calls. |
 | `configuration` | Check absolute config path, timezone and directory permissions; remove SDK base URL overrides. |
@@ -390,6 +410,15 @@ verification for the deployment you use.
 | `unsupported` | Samples/GPS require future FIT work; readiness/daily load are not available through the documented endpoints. |
 
 ## Update or remove
+
+### Published releases
+
+To upgrade, replace `garmin-training-mcp==0.1.0` in your client arguments with the
+new published version. Run the matching `--help` command, restart the client, and
+make a Garmin tool call. Keep your existing credential settings. Editing a local
+checkout does not change an installation launched from PyPI.
+
+### Local development
 
 After editing dependencies intentionally, use `uv lock` to refresh `uv.lock`, review
 changes and run the full checks before keeping the update. The pinned official SDK
@@ -411,7 +440,11 @@ uvx --isolated --python 3.13 --from . garmin-mcp --help
 
 The `touch` command updates only the timestamp, not the file's contents. See
 [uv's local dependency caching behavior](https://docs.astral.sh/uv/concepts/cache/).
-Restart your MCP client after code/dependency changes. Remove registrations with:
+Restart your MCP client after code/dependency changes.
+
+### Remove
+
+Remove registrations with:
 
 ```sh
 claude mcp remove --scope user garmin-training
