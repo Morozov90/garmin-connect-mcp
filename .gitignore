@@ -1,0 +1,18 @@
+.venv/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+.env
+.env.*
+.superpowers/
+.DS_Store
+
+# Local MCP credentials and client configuration must never be committed.
+personal-api-key
+bearer-token.json
+credentials.lock
+/.codex/config.toml
+/.claude.json
+/.mcp.json
+dist/
