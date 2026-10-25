@@ -35,11 +35,14 @@ Add this entry to `~/.codex/config.toml`, or update the existing `garmin-trainin
 [mcp_servers.garmin-training]
 command = "uvx"
 args = ["--python", "3.13", "--from", "garmin-training-mcp==0.1.1", "garmin-mcp"]
-tool_timeout_sec = 180
 
 [mcp_servers.garmin-training.env]
 GARMIN_PERSONAL_API_KEY = "YOUR_GARMIN_PERSONAL_API_KEY"
 ```
+
+Codex allows 60 seconds per tool call by default. If Garmin calls time out, add
+`tool_timeout_sec = 180` under `[mcp_servers.garmin-training]`, before the `.env`
+table. See the [Codex timeout settings](https://learn.chatgpt.com/docs/extend/mcp#other-configuration-options).
 
 ### Claude Code and other JSON clients
 

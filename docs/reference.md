@@ -65,8 +65,11 @@ codex mcp add garmin-training -- "$GARMIN_UVX_BIN" --python 3.13 --from garmin-t
 
 Register only the clients you use. Update existing entries instead of adding
 duplicate TOML tables. If only the key changes, keep your command and arguments.
-The optional Codex timeout allows time for bounded retries. Codex CLI and its local
-desktop app share MCP configuration on the same host. Claude Code's user
+Codex defaults to 60 seconds per tool call. If calls time out during slow Garmin
+responses or retries, add `tool_timeout_sec = 180` under
+`[mcp_servers.garmin-training]`, before its `.env` table.
+See the [Codex timeout settings](https://learn.chatgpt.com/docs/extend/mcp#other-configuration-options).
+Codex CLI and its local desktop app share MCP configuration on the same host. Claude Code's user
 configuration is `~/.claude.json`; preserve its other settings. After restarting,
 run `/mcp` and check that the server exposes five tools.
 
