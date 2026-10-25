@@ -359,7 +359,7 @@ wheels = [
 
 [[package]]
 name = "garmin-training-mcp"
-version = "0.1.0"
+version = "0.1.1"
 source = { editable = "." }
 dependencies = [
     { name = "garmin-connect-personal-api-python" },

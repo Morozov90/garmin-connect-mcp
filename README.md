@@ -42,7 +42,7 @@ The published package is available on [PyPI](https://pypi.org/project/garmin-tra
 No repository checkout or cloud hosting is required. Check that it launches:
 
 ```sh
-uvx --python 3.13 --from garmin-training-mcp==0.1.0 garmin-mcp --help
+uvx --python 3.13 --from garmin-training-mcp==0.1.1 garmin-mcp --help
 ```
 
 `garmin-training-mcp` is the package name; `garmin-mcp` is its executable.
@@ -82,7 +82,7 @@ Merge the following server entry into your user configuration at `~/.codex/confi
 ```toml
 [mcp_servers.garmin-training]
 command = "uvx"
-args = ["--python", "3.13", "--from", "garmin-training-mcp==0.1.0", "garmin-mcp"]
+args = ["--python", "3.13", "--from", "garmin-training-mcp==0.1.1", "garmin-mcp"]
 tool_timeout_sec = 180
 
 [mcp_servers.garmin-training.env]
@@ -119,7 +119,7 @@ Merge this entry into the client's local MCP configuration:
       "command": "uvx",
       "args": [
         "--python", "3.13",
-        "--from", "garmin-training-mcp==0.1.0",
+        "--from", "garmin-training-mcp==0.1.1",
         "garmin-mcp"
       ],
       "env": {
@@ -157,7 +157,7 @@ client's `env` block is not automatically available to a separate terminal comma
 Run in an interactive terminal:
 
 ```sh
-uvx --python 3.13 --from garmin-training-mcp==0.1.0 garmin-mcp setup
+uvx --python 3.13 --from garmin-training-mcp==0.1.1 garmin-mcp setup
 ```
 
 The prompt hides your input and refuses noninteractive input or an echoing fallback.
@@ -176,8 +176,8 @@ shell commands, which resolve the executable path before saving the registration
 
 ```sh
 GARMIN_UVX_BIN="$(command -v uvx)"
-claude mcp add --transport stdio --scope user garmin-training -- "$GARMIN_UVX_BIN" --python 3.13 --from garmin-training-mcp==0.1.0 garmin-mcp
-codex mcp add garmin-training -- "$GARMIN_UVX_BIN" --python 3.13 --from garmin-training-mcp==0.1.0 garmin-mcp
+claude mcp add --transport stdio --scope user garmin-training -- "$GARMIN_UVX_BIN" --python 3.13 --from garmin-training-mcp==0.1.1 garmin-mcp
+codex mcp add garmin-training -- "$GARMIN_UVX_BIN" --python 3.13 --from garmin-training-mcp==0.1.1 garmin-mcp
 ```
 
 Register only the clients you use. If an entry already exists, update its configuration
@@ -229,7 +229,7 @@ installation directly, use `/absolute/path/to/garmin-connect-mcp/.venv/bin/garmi
 as its command and `[]` as its arguments. Keep the same credential configuration.
 The direct launcher does not install or resolve dependencies during client startup.
 For local `uvx` development instead, use `--from .` in the repository root; client
-configurations need the full checkout path in place of `garmin-training-mcp==0.1.0`.
+configurations need the full checkout path in place of `garmin-training-mcp==0.1.1`.
 
 ## Dates, units and output semantics
 
@@ -329,7 +329,7 @@ untrusted user content, not instructions.
 Check that the release launches without a checkout:
 
 ```sh
-uvx --python 3.13 --from garmin-training-mcp==0.1.0 garmin-mcp --help
+uvx --python 3.13 --from garmin-training-mcp==0.1.1 garmin-mcp --help
 ```
 
 After configuring credentials, fully quit and reopen your client, then ask:
@@ -365,7 +365,7 @@ After configuring credentials locally, choose a date with synced activity, sleep
 and wellness data. Replace `YYYY-MM-DD` with that date:
 
 ```sh
-uvx --python 3.13 --from garmin-training-mcp==0.1.0 garmin-mcp check --date YYYY-MM-DD
+uvx --python 3.13 --from garmin-training-mcp==0.1.1 garmin-mcp check --date YYYY-MM-DD
 ```
 
 This command makes real Garmin calls and prints only availability counts/statuses,
@@ -413,7 +413,7 @@ verification for the deployment you use.
 
 ### Published releases
 
-To upgrade, replace `garmin-training-mcp==0.1.0` in your client arguments with the
+To upgrade, replace `garmin-training-mcp==0.1.1` in your client arguments with the
 new published version. Run the matching `--help` command, restart the client, and
 make a Garmin tool call. Keep your existing credential settings. Editing a local
 checkout does not change an installation launched from PyPI.
